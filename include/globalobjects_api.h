@@ -50,7 +50,7 @@ RECOMP_IMPORT(YAZMT_Z64_GLOBAL_OBJECTS_MOD_NAME, int ZGlobalObj_getObjIdFromVrom
 // Gets the global object associated with a given vrom address.
 RECOMP_IMPORT(YAZMT_Z64_GLOBAL_OBJECTS_MOD_NAME, void *ZGlobalObj_getGlobalObjectFromVrom(uintptr_t vromStart));
 
-// Gets the global Gfx pointer to a display list.
+// Gets the global Gfx pointer to a display list. Repoints commands that share a segment with the passed in pointer.
 RECOMP_IMPORT(YAZMT_Z64_GLOBAL_OBJECTS_MOD_NAME, Gfx *ZGlobalObj_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr));
 
 #endif
