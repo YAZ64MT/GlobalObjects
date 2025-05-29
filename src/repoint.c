@@ -7,10 +7,6 @@
 #include "z64animation.h"
 #include "helpers.h"
 
-bool isSegmentedPtr(void *p) {
-    return SEGMENT_NUMBER(p) <= 0xF;
-}
-
 RECOMP_EXPORT void ZGlobalObj_globalizeGfx(void *obj, Gfx *segmentedPtr) {
     if (!isSegmentedPtr(segmentedPtr)) {
         return;
