@@ -7,12 +7,12 @@
 #include "z64animation.h"
 #include "helpers.h"
 
-bool is_segmented_ptr(void *p) {
+bool isSegmentedPtr(void *p) {
     return SEGMENT_NUMBER(p) <= 0xF;
 }
 
-RECOMP_EXPORT void zglobalobj_globalize_gfx(void *obj, Gfx *segmentedPtr) {
-    if (!is_segmented_ptr(segmentedPtr)) {
+RECOMP_EXPORT void ZGlobalObj_globalizeGfx(void *obj, Gfx *segmentedPtr) {
+    if (!isSegmentedPtr(segmentedPtr)) {
         return;
     }
 
@@ -38,8 +38,8 @@ RECOMP_EXPORT void zglobalobj_globalize_gfx(void *obj, Gfx *segmentedPtr) {
     }
 }
 
-RECOMP_EXPORT void zglobalobj_globalize_dl(void *obj, Gfx *segmentedPtr) {
-    if (!is_segmented_ptr(segmentedPtr)) {
+RECOMP_EXPORT void ZGlobalObj_globalizeDL(void *obj, Gfx *segmentedPtr) {
+    if (!isSegmentedPtr(segmentedPtr)) {
         return;
     }
 
@@ -63,7 +63,7 @@ RECOMP_EXPORT void zglobalobj_globalize_dl(void *obj, Gfx *segmentedPtr) {
 
             case G_DL:
                 if (SEGMENT_NUMBER(globalPtr->words.w1) == segment) {
-                    zglobalobj_globalize_dl(obj, (Gfx *)(globalPtr->words.w1));
+                    ZGlobalObj_globalizeDL(obj, (Gfx *)(globalPtr->words.w1));
                 }
 
                 if ((globalPtr->words.w0 >> 16 & 0xFF) == G_DL_NOPUSH) {
@@ -75,7 +75,7 @@ RECOMP_EXPORT void zglobalobj_globalize_dl(void *obj, Gfx *segmentedPtr) {
             case G_SETTIMG:
             case G_MOVEMEM:
                 if (SEGMENT_NUMBER(globalPtr->words.w1) == segment) {
-                    zglobalobj_globalize_gfx(obj, (Gfx *)globalPtr->words.w1);
+                    ZGlobalObj_globalizeGfx(obj, (Gfx *)globalPtr->words.w1);
                 }
                 break;
 
@@ -87,8 +87,8 @@ RECOMP_EXPORT void zglobalobj_globalize_dl(void *obj, Gfx *segmentedPtr) {
     }
 }
 
-RECOMP_EXPORT void zglobalobj_globalize_lodlimb_skeleton(void *obj, FlexSkeletonHeader *skel) {
-    if (!is_segmented_ptr(skel)) {
+RECOMP_EXPORT void ZGlobalObj_globalizeLodLimbSkeleton(void *obj, FlexSkeletonHeader *skel) {
+    if (!isSegmentedPtr(skel)) {
         return;
     }
 
@@ -110,8 +110,8 @@ RECOMP_EXPORT void zglobalobj_globalize_lodlimb_skeleton(void *obj, FlexSkeleton
     }
 }
 
-RECOMP_EXPORT void zglobalobj_globalize_standardlimb_skeleton(void *obj, FlexSkeletonHeader *skel) {
-    if (!is_segmented_ptr(skel)) {
+RECOMP_EXPORT void ZGlobalObj_globalizeStandardLimbSkeleton(void *obj, FlexSkeletonHeader *skel) {
+    if (!isSegmentedPtr(skel)) {
         return;
     }
 
