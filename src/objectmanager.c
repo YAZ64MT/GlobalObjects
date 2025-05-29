@@ -64,11 +64,11 @@ RECOMP_EXPORT void *ZGlobalObj_getGlobalObjectFromVrom(uintptr_t vromStart) {
     return NULL;
 }
 
-bool isFieldKeepObject(ObjectId id) {
+bool hasFieldKeepDependency(ObjectId id) {
     return id == OBJECT_HANA || id == OBJECT_WOOD02;
 }
 
-bool isDangeonKeepObject(ObjectId id) {
+bool hasDangeonKeepDependency(ObjectId id) {
     return id == OBJECT_BDOOR || id == OBJECT_SYOKUDAI;
 }
 
@@ -85,9 +85,9 @@ RECOMP_EXPORT Gfx *ZGlobalObj_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr) {
 
     if (recomputil_u32_hashset_insert(gRepointTracker[id], (uintptr_t)segmentedPtr)) {
         // workaround for gameplay_dangeon_keep and gameplay_field_keep sharing a segment
-        if (isFieldKeepObject(id)) {
+        if (hasFieldKeepDependency(id)) {
             Repoint_setFieldOrDangeonKeep(GAMEPLAY_FIELD_KEEP);
-        } else if (isDangeonKeepObject(id)) {
+        } else if (hasDangeonKeepDependency(id)) {
             Repoint_setFieldOrDangeonKeep(GAMEPLAY_DANGEON_KEEP);
         }
 
