@@ -6,10 +6,20 @@
 #include "stdbool.h"
 #include "z64animation.h"
 #include "helpers.h"
+#include "objectmanager.h"
 
+#define SEGMENT_GAMEPLAY_KEEP 4
+#define SEGMENT_FIELD_OR_DANGEON_KEEP 5
 
+ObjectId gFieldOrDangeonKeep;
 
+void Repoint_setFieldOrDangeonKeep(ObjectId id) {
+    gFieldOrDangeonKeep = id;
+}
 
+void Repoint_unsetFieldOrDangeonKeep() {
+    gFieldOrDangeonKeep = 0;
+}
 
 RECOMP_EXPORT void ZGlobalObj_globalizeDL(void *obj, Gfx *segmentedPtr) {
     if (!isSegmentedPtr(segmentedPtr)) {
@@ -22,12 +32,16 @@ RECOMP_EXPORT void ZGlobalObj_globalizeDL(void *obj, Gfx *segmentedPtr) {
 
     Gfx *globalPtr = TO_GLOBAL_PTR(obj, segmentedPtr);
 
-    u8 opcode;
+    unsigned opcode;
+
+    unsigned currentSegment;
 
     bool isEndDl = false;
 
     while (!isEndDl) {
         opcode = globalPtr->words.w0 >> 24;
+
+        currentSegment = SEGMENT_NUMBER(globalPtr->words.w1);
 
         switch (opcode) {
             case G_ENDDL:
@@ -35,7 +49,7 @@ RECOMP_EXPORT void ZGlobalObj_globalizeDL(void *obj, Gfx *segmentedPtr) {
                 break;
 
             case G_DL:
-                if (SEGMENT_NUMBER(globalPtr->words.w1) == segment) {
+                if (currentSegment == segment) {
                     ZGlobalObj_globalizeDL(obj, (Gfx *)(globalPtr->words.w1));
                 }
 
@@ -47,8 +61,12 @@ RECOMP_EXPORT void ZGlobalObj_globalizeDL(void *obj, Gfx *segmentedPtr) {
             case G_MTX:
             case G_SETTIMG:
             case G_MOVEMEM:
-                if (SEGMENT_NUMBER(globalPtr->words.w1) == segment) {
-                    ZGlobalObj_globalizeGfx(obj, (Gfx *)globalPtr->words.w1);
+                if (currentSegment == segment) {
+                    globalPtr->words.w1 = (uintptr_t)obj + segmentOffset;
+                } else if (currentSegment == SEGMENT_GAMEPLAY_KEEP) {
+                    globalPtr->words.w1 = (uintptr_t)(ZGlobalObj_getGlobalGfxPtr(GAMEPLAY_KEEP, (Gfx *)(globalPtr->words.w1)));
+                } else if (currentSegment == SEGMENT_FIELD_OR_DANGEON_KEEP && gFieldOrDangeonKeep) {
+                    globalPtr->words.w1 = (uintptr_t)(ZGlobalObj_getGlobalGfxPtr(gFieldOrDangeonKeep, (Gfx *)(globalPtr->words.w1)));
                 }
                 break;
 
