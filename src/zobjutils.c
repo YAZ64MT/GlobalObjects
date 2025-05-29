@@ -5,8 +5,16 @@
 #include "rt64_extended_gbi.h"
 #include "stdbool.h"
 #include "z64animation.h"
+#include "helpers.h"
 
-RECOMP_EXPORT void zglobalobj_globalize_gfx(void *obj, Gfx* segmentedPtr) {
+bool is_segmented_ptr(void *p) {
+    return SEGMENT_NUMBER(p) <= 0xF;
+}
+
+RECOMP_EXPORT void zglobalobj_globalize_gfx(void *obj, Gfx *segmentedPtr) {
+    if (!is_segmented_ptr(segmentedPtr)) {
+        return;
+    }
 
     uintptr_t base = (uintptr_t)obj;
 
@@ -17,30 +25,32 @@ RECOMP_EXPORT void zglobalobj_globalize_gfx(void *obj, Gfx* segmentedPtr) {
     u8 opcode = globalPtr->words.w0 >> 24;
 
     switch (opcode) {
-    case G_DL:
-    case G_VTX:
-    case G_MTX:
-    case G_SETTIMG:
-    case G_MOVEMEM:
-        globalPtr->words.w1 = base + segmentOffset;
-        break;
+        case G_DL:
+        case G_VTX:
+        case G_MTX:
+        case G_SETTIMG:
+        case G_MOVEMEM:
+            globalPtr->words.w1 = base + segmentOffset;
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
 }
 
 RECOMP_EXPORT void zglobalobj_globalize_dl(void *obj, Gfx *segmentedPtr) {
-
-    uintptr_t base = (uintptr_t)obj;
+    if (!is_segmented_ptr(segmentedPtr)) {
+        return;
+    }
 
     u32 segmentOffset = SEGMENT_OFFSET(segmentedPtr);
 
-    u8 segment = SEGMENT_NUMBER(segmentedPtr);
+    u32 segment = SEGMENT_NUMBER(segmentedPtr);
 
-    Gfx *globalPtr = (Gfx *)(base + segmentOffset);
+    Gfx *globalPtr = TO_GLOBAL_PTR(obj, segmentedPtr);
 
     u8 opcode;
+
     bool isEndDl = false;
 
     while (!isEndDl) {
@@ -53,18 +63,19 @@ RECOMP_EXPORT void zglobalobj_globalize_dl(void *obj, Gfx *segmentedPtr) {
 
             case G_DL:
                 if (SEGMENT_NUMBER(globalPtr->words.w1) == segment) {
-                    zglobalobj_globalize_dl(obj, (Gfx *)SEGMENT_ADDR(segment, segmentOffset));                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ));
+                    zglobalobj_globalize_dl(obj, (Gfx *)globalPtr->words.w1);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ));
                 }
-                
-                if ((globalPtr->words.w0 >> 16 & 0xFF)  == G_DL_NOPUSH) {
+
+                if ((globalPtr->words.w0 >> 16 & 0xFF) == G_DL_NOPUSH) {
                     isEndDl = true;
                 }
+                // FALL THROUGH
             case G_VTX:
             case G_MTX:
             case G_SETTIMG:
             case G_MOVEMEM:
                 if (SEGMENT_NUMBER(globalPtr->words.w1) == segment) {
-                    zglobalobj_globalize_gfx(obj, globalPtr);
+                    zglobalobj_globalize_gfx(obj, (Gfx *)globalPtr->words.w1);
                 }
                 break;
 
@@ -72,77 +83,51 @@ RECOMP_EXPORT void zglobalobj_globalize_dl(void *obj, Gfx *segmentedPtr) {
                 break;
         }
 
-        globalPtr = (Gfx *)((uint32_t)globalPtr + sizeof(Gfx));
+        globalPtr = (Gfx *)((uintptr_t)globalPtr + sizeof(Gfx));
     }
 }
 
-// TODO: REWRITE THESE
-RECOMP_EXPORT void zglobalobj_globalizeLinkSkeleton(void *, u32 skeletonHeaderOffset, u8 targetSegment, const void *newBase) {
-    u32 newBaseAddress = (u32)newBase;
+RECOMP_EXPORT void zglobalobj_globalize_lodlimb_skeleton(void *obj, FlexSkeletonHeader *skel) {
+    if (!is_segmented_ptr(skel)) {
+        return;
+    }
 
-    // repoint only if segmented
-    if (zobj[skeletonHeaderOffset] == targetSegment) {
+    FlexSkeletonHeader *skelGlobal = TO_GLOBAL_PTR(obj, skel);
 
-        u32 firstLimbOffset = SEGMENT_OFFSET(readU32(zobj, skeletonHeaderOffset));
+    LodLimb **limbs = TO_GLOBAL_PTR(obj, skelGlobal->sh.segment);
 
-        FlexSkeletonHeader *flexHeader = (FlexSkeletonHeader *)(&zobj[skeletonHeaderOffset]);
+    LodLimb *limb;
 
-        writeU32(zobj, skeletonHeaderOffset, firstLimbOffset + newBaseAddress);
+    u8 limbCount = skelGlobal->dListCount;
 
-        LodLimb **limbs = (LodLimb **)(&zobj[firstLimbOffset]);
-
-        //recomp_printf("Limb count: %d\n", flexHeader->sh.limbCount);
-        //recomp_printf("First limb entry location: 0x%x\n", limbs);
-
-        LodLimb *limb;
-        for (u8 i = 0; i < flexHeader->sh.limbCount; i++) {
-            limb = (LodLimb *)&zobj[SEGMENT_OFFSET(limbs[i])];
-            if (limb->dLists[0]) { // do not repoint limbs without display lists
-                limb->dLists[0] = (Gfx *)(SEGMENT_OFFSET(limb->dLists[0]) + newBaseAddress);
-                limb->dLists[1] = (Gfx *)(SEGMENT_OFFSET(limb->dLists[1]) + newBaseAddress);
-            }
-            limbs[i] = (LodLimb *)(SEGMENT_OFFSET(limbs[i]) + newBaseAddress);
+    for (u8 i = 0; i < limbCount; ++i) {
+        limb = TO_GLOBAL_PTR(obj, limbs[i]);
+        if (limb->dLists[0]) { // do not repoint limbs without display lists
+            limb->dLists[0] = TO_GLOBAL_PTR(obj, limb->dLists[0]);
+            limb->dLists[1] = TO_GLOBAL_PTR(obj, limb->dLists[1]);
         }
+        limbs[i] = limb;
     }
 }
 
-bool isBytesEqual(const void *ptr1, const void *ptr2, size_t num) {
-    const u8 *a = ptr1;
-    const u8 *b = ptr2;
-
-    for (size_t i = 0; i < num; i++) {
-        if (a[i] != b[i]) {
-            return false;
-        }
+RECOMP_EXPORT void zglobalobj_globalize_standardlimb_skeleton(void *obj, FlexSkeletonHeader *skel) {
+    if (!is_segmented_ptr(skel)) {
+        return;
     }
 
-    return true;
-}
+    FlexSkeletonHeader *skelGlobal = TO_GLOBAL_PTR(obj, skel);
 
-RECOMP_EXPORT s32 ZobjUtils_getFlexSkeletonHeaderOffset(const u8 zobj[], u32 zobjSize) {
-    // Link should always have 0x15 limbs where 0x12 have display lists
-    // so, if a hierarchy exists, then this string must appear at least once
-    u8 lowerHeaderBytes[] = {0x15, 0x00, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00};
+    StandardLimb **limbs = TO_GLOBAL_PTR(obj, skelGlobal->sh.segment);
 
-    const u8 LOWER_HEADER_SIZE = ARRAY_COUNT(lowerHeaderBytes);
+    StandardLimb *limb;
 
-    const u8 FLEX_HEADER_SIZE = 0xC;
+    u8 limbCount = skelGlobal->dListCount;
 
-    u32 index = FLEX_HEADER_SIZE - LOWER_HEADER_SIZE;
-
-    u32 endIndex = zobjSize - FLEX_HEADER_SIZE;
-
-    while (index < endIndex) {
-        if (isBytesEqual(&zobj[index], &lowerHeaderBytes[0], LOWER_HEADER_SIZE)) {
-            // account for first four bytes of header
-            return index - 4;
+    for (u8 i = 0; i < limbCount; ++i) {
+        limb = TO_GLOBAL_PTR(obj, limbs[i]);
+        if (limb->dList) { // do not repoint limbs without display lists
+            limb->dList = TO_GLOBAL_PTR(obj, limb->dList);
         }
-
-        // header must be aligned
-        index += 4;
+        limbs[i] = limb;
     }
-
-    // Returning a signed value here isn't ideal
-    // but in practice there should never be a zobj passed in that's >2 GB in size
-    return -1;
 }
