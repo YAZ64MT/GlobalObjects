@@ -62,7 +62,7 @@ RECOMP_EXPORT void ZGlobalObj_globalizeDL(void *obj, Gfx *segmentedPtr) {
             case G_SETTIMG:
             case G_MOVEMEM:
                 if (currentSegment == segment) {
-                    globalPtr->words.w1 = (uintptr_t)obj + segmentOffset;
+                    globalPtr->words.w1 = (uintptr_t)obj + SEGMENT_OFFSET(globalPtr->words.w1);
                 } else if (currentSegment == SEGMENT_GAMEPLAY_KEEP) {
                     globalPtr->words.w1 = (uintptr_t)(ZGlobalObj_getGlobalGfxPtr(GAMEPLAY_KEEP, (Gfx *)(globalPtr->words.w1)));
                 } else if (currentSegment == SEGMENT_FIELD_OR_DANGEON_KEEP && gFieldOrDangeonKeep) {
