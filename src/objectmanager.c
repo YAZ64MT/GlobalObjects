@@ -19,7 +19,7 @@ void initObjectManager() {
 
     for (size_t i = 0; i < OBJECT_ID_MAX; ++i) {
         if (gObjectTable[i].vromStart) {
-            recomputil_u32_value_hashmap_insert(gVromToObjId, gObjectTable[i].vromStart, i);
+                recomputil_u32_value_hashmap_insert(gVromToObjId, gObjectTable[i].vromStart, i);
         }
     }
 }
@@ -99,15 +99,11 @@ RECOMP_EXPORT Gfx *ZGlobalObj_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr) {
     return TO_GLOBAL_PTR(obj, segmentedPtr);
 }
 
-RECOMP_CALLBACK("*", recomp_on_init)
-void initObjectManagerOnce(PlayState *play) {
-    initObjectManager();
-}
-
 // Can't start loading objects in until the dma manager is initialized
 RECOMP_DECLARE_EVENT(ZGlobalObj_onReady());
 
-RECOMP_HOOK_RETURN("DmaMgr_Init")
-void doOnReadyCallback_on_DmaMgr_Init() {
+RECOMP_HOOK_RETURN("Main_Init")
+void initializeObjectManagerOnce() {
+    initObjectManager();
     ZGlobalObj_onReady();
 }
