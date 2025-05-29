@@ -7,32 +7,9 @@
 #include "z64animation.h"
 #include "helpers.h"
 
-RECOMP_EXPORT void ZGlobalObj_globalizeGfx(void *obj, Gfx *segmentedPtr) {
-    if (!isSegmentedPtr(segmentedPtr)) {
-        return;
-    }
 
-    uintptr_t base = (uintptr_t)obj;
 
-    u32 segmentOffset = SEGMENT_OFFSET(segmentedPtr);
 
-    Gfx *globalPtr = (Gfx *)(base + segmentOffset);
-
-    u8 opcode = globalPtr->words.w0 >> 24;
-
-    switch (opcode) {
-        case G_DL:
-        case G_VTX:
-        case G_MTX:
-        case G_SETTIMG:
-        case G_MOVEMEM:
-            globalPtr->words.w1 = base + segmentOffset;
-            break;
-
-        default:
-            break;
-    }
-}
 
 RECOMP_EXPORT void ZGlobalObj_globalizeDL(void *obj, Gfx *segmentedPtr) {
     if (!isSegmentedPtr(segmentedPtr)) {

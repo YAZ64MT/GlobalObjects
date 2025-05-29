@@ -16,9 +16,6 @@
 // For a Gfx global pointer, use ZGlobalObj_getGlobalGfxPtr instead.
 #define SEGMENTED_TO_GLOBAL_PTR(globalObj, segmentedPtr) ((void *)((uintptr_t)globalObj + SEGMENT_OFFSET(segmentedPtr)))
 
-// Converts the segmented pointer of a Gfx command to its global pointer.
-RECOMP_IMPORT(YAZMT_Z64_GLOBAL_OBJECTS_MOD_NAME, void ZGlobalObj_globalizeGfx(void *obj, Gfx *segmentedPtr));
-
 // Converts the segmented pointers of the Gfx commands in a display list to their global pointers.
 //
 // If a gSPBranchList or gSPDisplayList command is encountered, this function is called recursively
