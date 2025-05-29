@@ -82,10 +82,15 @@ RECOMP_EXPORT Gfx *ZGlobalObj_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr) {
     return TO_GLOBAL_PTR(obj, segmentedPtr);
 }
 
-RECOMP_DECLARE_EVENT(ZGlobalObj_onInit());
-
 RECOMP_CALLBACK("*", recomp_on_init)
 void initObjectManagerOnce(PlayState *play) {
     initObjectManager();
-    ZGlobalObj_onInit();
+}
+
+// Can't start loading objects in until the dma manager is initialized
+RECOMP_DECLARE_EVENT(ZGlobalObj_onReady());
+
+RECOMP_HOOK_RETURN("DmaMgr_Init")
+void doOnReadyCallback_on_DmaMgr_Init() {
+    ZGlobalObj_onReady();
 }
