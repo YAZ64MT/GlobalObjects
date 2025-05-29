@@ -63,7 +63,7 @@ RECOMP_EXPORT void zglobalobj_globalize_dl(void *obj, Gfx *segmentedPtr) {
 
             case G_DL:
                 if (SEGMENT_NUMBER(globalPtr->words.w1) == segment) {
-                    zglobalobj_globalize_dl(obj, (Gfx *)globalPtr->words.w1);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ));
+                    zglobalobj_globalize_dl(obj, (Gfx *)(globalPtr->words.w1));
                 }
 
                 if ((globalPtr->words.w0 >> 16 & 0xFF) == G_DL_NOPUSH) {
