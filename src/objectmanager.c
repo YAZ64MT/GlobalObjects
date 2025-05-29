@@ -18,7 +18,9 @@ void initObjectManager() {
     gVromToObjId = recomputil_create_u32_value_hashmap();
 
     for (size_t i = 0; i < OBJECT_ID_MAX; ++i) {
-        recomputil_u32_value_hashmap_insert(gVromToObjId, gObjectTable[i].vromStart, i);
+        if (gObjectTable[i].vromStart) {
+            recomputil_u32_value_hashmap_insert(gVromToObjId, gObjectTable[i].vromStart, i);
+        }
     }
 }
 
