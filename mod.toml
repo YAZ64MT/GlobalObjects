@@ -22,7 +22,7 @@ This can be used to draw objects in places that they are not normally loaded.
 
 Human Link's bow could be drawn on Zora Link, for example.
 
-API is currently unstable and may break between updates."""
+API is currently unstable and may change between updates."""
 
 # A short description that will show up in this mod's entry in the mod list. This should be human readable and kept short
 # to prevent it from being cut off due to the limited space.
