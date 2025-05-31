@@ -2,5 +2,5 @@
 #include "global.h"
 
 bool isSegmentedPtr(void *p) {
-    return SEGMENT_NUMBER(p) <= 0xF;
+    return (u32)p >> 24 <= 0xF;
 }
