@@ -91,7 +91,7 @@ RECOMP_EXPORT Gfx *ZGlobalObj_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr) {
             Repoint_setFieldOrDangeonKeep(GAMEPLAY_DANGEON_KEEP);
         }
 
-        ZGlobalObj_globalizeDL(obj, segmentedPtr);
+        ZGlobalObj_globalizeSegmentedDL(obj, segmentedPtr);
 
         Repoint_unsetFieldOrDangeonKeep();
     }

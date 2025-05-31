@@ -21,16 +21,19 @@ void Repoint_unsetFieldOrDangeonKeep() {
     gFieldOrDangeonKeep = 0;
 }
 
-RECOMP_EXPORT void ZGlobalObj_globalizeDL(void *obj, Gfx *segmentedPtr) {
-    if (!isSegmentedPtr(segmentedPtr)) {
+RECOMP_EXPORT void ZGlobalObj_rebaseDL(void *newBase, Gfx *globalPtr, unsigned targetSegment) {
+
+    uintptr_t fakeSegmentedOffset;
+
+    if (isSegmentedPtr(newBase)) {
+        recomp_printf("ZGlobalObj_rebaseDL: Incorrectly passed in non-global pointer 0x%X as newBase\n", newBase);
         return;
     }
 
-    u32 segmentOffset = SEGMENT_OFFSET(segmentedPtr);
-
-    u32 segment = SEGMENT_NUMBER(segmentedPtr);
-
-    Gfx *globalPtr = TO_GLOBAL_PTR(obj, segmentedPtr);
+    if (isSegmentedPtr(globalPtr)) {
+        recomp_printf("ZGlobalObj_rebaseDL: Incorrectly passed in non-global pointer 0x%X as globalPtr\n", globalPtr);
+        return;
+    }
 
     unsigned opcode;
 
@@ -49,8 +52,8 @@ RECOMP_EXPORT void ZGlobalObj_globalizeDL(void *obj, Gfx *segmentedPtr) {
                 break;
 
             case G_DL:
-                if (currentSegment == segment) {
-                    ZGlobalObj_globalizeDL(obj, (Gfx *)(globalPtr->words.w1));
+                if (currentSegment == targetSegment) {
+                    ZGlobalObj_rebaseDL(newBase, TO_GLOBAL_PTR(newBase, globalPtr->words.w1), targetSegment);
                 }
 
                 if ((globalPtr->words.w0 >> 16 & 0xFF) == G_DL_NOPUSH) {
@@ -61,8 +64,9 @@ RECOMP_EXPORT void ZGlobalObj_globalizeDL(void *obj, Gfx *segmentedPtr) {
             case G_MTX:
             case G_SETTIMG:
             case G_MOVEMEM:
-                if (currentSegment == segment) {
-                    globalPtr->words.w1 = (uintptr_t)obj + SEGMENT_OFFSET(globalPtr->words.w1);
+                if (currentSegment == targetSegment) {
+                    recomp_printf("Repointing 00x%X -> 0x%X\n", globalPtr->words.w1, TO_GLOBAL_PTR(newBase, globalPtr->words.w1));
+                    globalPtr->words.w1 = (uintptr_t)TO_GLOBAL_PTR(newBase, globalPtr->words.w1);
                 } else if (currentSegment == SEGMENT_GAMEPLAY_KEEP) {
                     globalPtr->words.w1 = (uintptr_t)(ZGlobalObj_getGlobalGfxPtr(GAMEPLAY_KEEP, (Gfx *)(globalPtr->words.w1)));
                 } else if (currentSegment == SEGMENT_FIELD_OR_DANGEON_KEEP && gFieldOrDangeonKeep) {
@@ -76,6 +80,15 @@ RECOMP_EXPORT void ZGlobalObj_globalizeDL(void *obj, Gfx *segmentedPtr) {
 
         globalPtr = (Gfx *)((uintptr_t)globalPtr + sizeof(Gfx));
     }
+}
+
+RECOMP_EXPORT void ZGlobalObj_globalizeSegmentedDL(void *obj, Gfx *segmentedPtr) {
+    if (!isSegmentedPtr(segmentedPtr) ) {
+        recomp_printf("ZGlobalObj_globalizeSegmentedDL: Incorrectly passed in global pointer 0x%X as segmentedPtr\n", segmentedPtr);
+        return;
+    }
+
+    ZGlobalObj_rebaseDL(obj, TO_GLOBAL_PTR(obj, segmentedPtr), SEGMENT_NUMBER(segmentedPtr));
 }
 
 RECOMP_EXPORT void ZGlobalObj_globalizeLodLimbSkeleton(void *obj, FlexSkeletonHeader *skel) {

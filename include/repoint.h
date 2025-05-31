@@ -6,7 +6,9 @@ void Repoint_setFieldOrDangeonKeep(ObjectId id);
 
 void Repoint_unsetFieldOrDangeonKeep();
 
-void ZGlobalObj_globalizeDL(void *obj, Gfx *segmentedPtr);
+void ZGlobalObj_rebaseDL(void *newBase, Gfx *globalPtr, unsigned targetSegment);
+
+void ZGlobalObj_globalizeSegmentedDL(void *obj, Gfx *segmentedPtr);
 
 void ZGlobalObj_globalizeLodLimbSkeleton(void *obj, FlexSkeletonHeader *skel);
 
