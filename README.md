@@ -6,15 +6,26 @@ This can be used to draw objects in places that they are not normally loaded.
 
 API is currently unstable and may change between updates.
 
-### Using this Mod
+### Usage
 
 Add [this header file](https://github.com/Neirn/Z64Recomp_GlobalObjects/blob/main/include/globalobjects_api.h) to your mod's includes and the mod to your dependencies in your toml:
 
-```
+```toml
 dependencies = [
     "yazmt_mm_global_objects",
 ]
 
+```
+
+Look at the header itself for function names and what they do.
+
+This mod initializes itself fairly early in the boot process, so it should be safe to call its functions at most times after the game boots. Call them too early though, and this mod breaks. So, an event named `ZGlobalObj_onReady` that is guaranteed to run right after the model manager initializes itself has been added. The expected function takes no arguments and can be added as follows:
+
+```c
+RECOMP_CALLBACK(YAZMT_Z64_GLOBAL_OBJECTS_MOD_NAME, ZGlobalObj_onReady)
+void my_cool_callback_function() {
+    // do stuff
+}
 ```
 
 ### Writing mods
