@@ -4,6 +4,19 @@ This is a mod for Majora's Mask: Recompiled that is a dependency for mods that n
 
 This can be used to draw objects in places that they are not normally loaded.
 
+API is currently unstable and may change between updates.
+
+### Using this Mod
+
+Add [this header file](https://github.com/Neirn/Z64Recomp_GlobalObjects/blob/main/include/globalobjects_api.h) to your mod's includes and the mod to 
+
+```
+dependencies = [
+    "yazmt_mm_global_objects",
+]
+
+```
+
 ### Writing mods
 See [this document](https://hackmd.io/fMDiGEJ9TBSjomuZZOgzNg) for an explanation of the modding framework, including how to write function patches and perform interop between different mods.
 
