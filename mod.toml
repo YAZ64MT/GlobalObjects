@@ -20,8 +20,6 @@ to vanilla objects.
 
 This can be used to draw objects in places that they are not normally loaded.
 
-Odolwa's sword could be drawn outside of his boss fight, for example.
-
 API is currently unstable and may change between updates."""
 
 # A short description that will show up in this mod's entry in the mod list. This should be human readable and kept short
@@ -63,4 +61,4 @@ func_reference_syms_file = "Zelda64RecompSyms/mm.us.rev1.syms.toml"
 data_reference_syms_files = [ "Zelda64RecompSyms/mm.us.rev1.datasyms.toml", "Zelda64RecompSyms/mm.us.rev1.datasyms_static.toml" ]
 
 # Additional files to include in the mod.
-additional_files = [ ]
+additional_files = [ "thumb.png" ]
