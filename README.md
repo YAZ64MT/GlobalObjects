@@ -8,7 +8,7 @@ API is currently unstable and may change between updates.
 
 ### Using this Mod
 
-Add [this header file](https://github.com/Neirn/Z64Recomp_GlobalObjects/blob/main/include/globalobjects_api.h) to your mod's includes and the mod to 
+Add [this header file](https://github.com/Neirn/Z64Recomp_GlobalObjects/blob/main/include/globalobjects_api.h) to your mod's includes and the mod to your dependencies in your toml:
 
 ```
 dependencies = [
