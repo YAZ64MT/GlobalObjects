@@ -102,7 +102,9 @@ RECOMP_EXPORT void ZGlobalObj_globalizeLodLimbSkeleton(void *obj, FlexSkeletonHe
         return;
     }
 
-    LodLimb **limbs = TO_GLOBAL_PTR(obj, skelGlobal->sh.segment);
+    skelGlobal->sh.segment = TO_GLOBAL_PTR(obj, skelGlobal->sh.segment);
+
+    LodLimb **limbs = (LodLimb **)skelGlobal->sh.segment;
 
     LodLimb *limb;
 
@@ -129,7 +131,9 @@ RECOMP_EXPORT void ZGlobalObj_globalizeStandardLimbSkeleton(void *obj, FlexSkele
         return;
     }
 
-    StandardLimb **limbs = TO_GLOBAL_PTR(obj, skelGlobal->sh.segment);
+    skelGlobal->sh.segment = TO_GLOBAL_PTR(obj, skelGlobal->sh.segment);
+
+    StandardLimb **limbs = (StandardLimb **)skelGlobal->sh.segment;
 
     StandardLimb *limb;
 
