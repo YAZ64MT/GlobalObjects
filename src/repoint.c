@@ -108,7 +108,7 @@ RECOMP_EXPORT void ZGlobalObj_globalizeLodLimbSkeleton(void *obj, FlexSkeletonHe
 
     LodLimb *limb;
 
-    u8 limbCount = skelGlobal->dListCount;
+    u8 limbCount = skelGlobal->sh.limbCount;
 
     for (u8 i = 0; i < limbCount; ++i) {
         limb = TO_GLOBAL_PTR(obj, limbs[i]);
@@ -137,7 +137,7 @@ RECOMP_EXPORT void ZGlobalObj_globalizeStandardLimbSkeleton(void *obj, FlexSkele
 
     StandardLimb *limb;
 
-    u8 limbCount = skelGlobal->dListCount;
+    u8 limbCount = skelGlobal->sh.limbCount;
 
     for (u8 i = 0; i < limbCount; ++i) {
         limb = TO_GLOBAL_PTR(obj, limbs[i]);
