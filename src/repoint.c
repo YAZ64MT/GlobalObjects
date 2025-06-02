@@ -22,9 +22,6 @@ void Repoint_unsetFieldOrDangeonKeep() {
 }
 
 RECOMP_EXPORT void ZGlobalObj_rebaseDL(void *newBase, Gfx *globalPtr, unsigned targetSegment) {
-
-    uintptr_t fakeSegmentedOffset;
-
     if (isSegmentedPtr(newBase)) {
         recomp_printf("ZGlobalObj_rebaseDL: Incorrectly passed in non-global pointer 0x%X as newBase\n", newBase);
         return;
