@@ -92,23 +92,22 @@ RECOMP_EXPORT void ZGlobalObj_globalizeSegmentedDL(void *obj, Gfx *segmentedPtr)
 }
 
 RECOMP_EXPORT void ZGlobalObj_globalizeLodLimbSkeleton(void *obj, FlexSkeletonHeader *skel) {
-    if (!isSegmentedPtr(skel)) {
+    if (isSegmentedPtr(skel)) {
+        skel = TO_GLOBAL_PTR(obj, skel);
+    }
+
+    if (!isSegmentedPtr(skel->sh.segment)) {
+        recomp_printf("ZGlobalObj_globalizeLodLimbSkeleton: FlexSkeletonHeader is already global!");
         return;
     }
 
-    FlexSkeletonHeader *skelGlobal = TO_GLOBAL_PTR(obj, skel);
+    skel->sh.segment = TO_GLOBAL_PTR(obj, skel->sh.segment);
 
-    if (!isSegmentedPtr(skelGlobal->sh.segment)) {
-        return;
-    }
-
-    skelGlobal->sh.segment = TO_GLOBAL_PTR(obj, skelGlobal->sh.segment);
-
-    LodLimb **limbs = (LodLimb **)skelGlobal->sh.segment;
+    LodLimb **limbs = (LodLimb **)skel->sh.segment;
 
     LodLimb *limb;
 
-    u8 limbCount = skelGlobal->sh.limbCount;
+    u8 limbCount = skel->sh.limbCount;
 
     for (u8 i = 0; i < limbCount; ++i) {
         limb = TO_GLOBAL_PTR(obj, limbs[i]);
@@ -121,23 +120,22 @@ RECOMP_EXPORT void ZGlobalObj_globalizeLodLimbSkeleton(void *obj, FlexSkeletonHe
 }
 
 RECOMP_EXPORT void ZGlobalObj_globalizeStandardLimbSkeleton(void *obj, FlexSkeletonHeader *skel) {
-    if (!isSegmentedPtr(skel)) {
+    if (isSegmentedPtr(skel)) {
+        skel = TO_GLOBAL_PTR(obj, skel);
+    }
+
+    if (!isSegmentedPtr(skel->sh.segment)) {
+        recomp_printf("ZGlobalObj_globalizeStandardLimbSkeleton: FlexSkeletonHeader is already global!");
         return;
     }
 
-    FlexSkeletonHeader *skelGlobal = TO_GLOBAL_PTR(obj, skel);
+    skel->sh.segment = TO_GLOBAL_PTR(obj, skel->sh.segment);
 
-    if (!isSegmentedPtr(skelGlobal->sh.segment)) {
-        return;
-    }
-
-    skelGlobal->sh.segment = TO_GLOBAL_PTR(obj, skelGlobal->sh.segment);
-
-    StandardLimb **limbs = (StandardLimb **)skelGlobal->sh.segment;
+    StandardLimb **limbs = (StandardLimb **)skel->sh.segment;
 
     StandardLimb *limb;
 
-    u8 limbCount = skelGlobal->sh.limbCount;
+    u8 limbCount = skel->sh.limbCount;
 
     for (u8 i = 0; i < limbCount; ++i) {
         limb = TO_GLOBAL_PTR(obj, limbs[i]);
