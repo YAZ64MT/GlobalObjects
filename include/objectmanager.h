@@ -12,7 +12,7 @@ void *ZGlobalObj_getGlobalObject(ObjectId id);
 
 Gfx *ZGlobalObj_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr);
 
-bool ZGlobalObj_getObjectIdFromVrom(uintptr_t vromStart, unsigned long *out);
+bool ZGlobalObj_getObjectIdFromVrom(uintptr_t vromStart, ObjectId *out);
 
 void *ZGlobalObj_getGlobalObjectFromVrom(uintptr_t vromStart);
 

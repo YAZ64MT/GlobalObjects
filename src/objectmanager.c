@@ -50,12 +50,12 @@ RECOMP_EXPORT void *ZGlobalObj_getGlobalObject(ObjectId id) {
     return gObjIdToMemTable[id];
 }
 
-RECOMP_EXPORT bool ZGlobalObj_getObjectIdFromVrom(uintptr_t vromStart, unsigned long *out) {
+RECOMP_EXPORT bool ZGlobalObj_getObjectIdFromVrom(uintptr_t vromStart, ObjectId *out) {
     return recomputil_u32_value_hashmap_get(gVromToObjId, vromStart, out);
 }
 
 RECOMP_EXPORT void *ZGlobalObj_getGlobalObjectFromVrom(uintptr_t vromStart) {
-    unsigned long id;
+    ObjectId id;
 
     if (ZGlobalObj_getObjectIdFromVrom(vromStart, &id)) {
         return ZGlobalObj_getGlobalObject(id);
