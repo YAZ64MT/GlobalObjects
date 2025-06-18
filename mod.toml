@@ -15,12 +15,7 @@ display_name = "Global Objects"
 
 # The description that will show up when this mod is displayed in the mod menu. This should be human readable.
 description =  """
-This is a mod for Majora's Mask: Recompiled that is a dependency for mods that need static references \
-to vanilla objects.
-
-This can be used to draw objects in places that they are not normally loaded.
-
-API is currently unstable and may change between updates."""
+This is an API mod for Majora's Mask: Recompiled for mods that need static global pointers to vanilla objects."""
 
 # A short description that will show up in this mod's entry in the mod list. This should be human readable and kept short
 # to prevent it from being cut off due to the limited space.
