@@ -19,11 +19,10 @@ dependencies = [
 
 Look at the header itself for function names and what they do.
 
-This mod initializes itself fairly early in the boot process, so it should be safe to call its functions at most times after the game boots. Call them too early though, and this mod breaks. So, an event named `ZGlobalObj_onReady` that is guaranteed to run right after the model manager initializes itself has been added. The expected function takes no arguments and can be added as follows:
+This mod initializes itself fairly early in the boot process, so it should be safe to call its functions at most times after the game boots. Call them too early though, and this mod breaks. So, an event named `onReady` that is guaranteed to run right after the model manager initializes itself has been added as well as a helper define for this event. The expected function takes no arguments and can be added as follows:
 
 ```c
-RECOMP_CALLBACK(YAZMT_Z64_GLOBAL_OBJECTS_MOD_NAME, ZGlobalObj_onReady)
-void my_cool_callback_function() {
+GLOBAL_OBJECTS_CALLBACK_ON_READY void my_cool_callback_function() {
     // do stuff
 }
 ```

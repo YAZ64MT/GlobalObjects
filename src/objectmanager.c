@@ -32,7 +32,7 @@ void *loadObjectFromVrom(uintptr_t vromAddr, size_t size) {
     return obj;
 }
 
-RECOMP_EXPORT void *ZGlobalObj_getGlobalObject(ObjectId id) {
+RECOMP_EXPORT void *GlobalObjects_getGlobalObject(ObjectId id) {
     if (id > OBJECT_ID_MAX) {
         return NULL;
     }
@@ -50,15 +50,15 @@ RECOMP_EXPORT void *ZGlobalObj_getGlobalObject(ObjectId id) {
     return gObjIdToMemTable[id];
 }
 
-RECOMP_EXPORT bool ZGlobalObj_getObjectIdFromVrom(uintptr_t vromStart, ObjectId *out) {
+RECOMP_EXPORT bool GlobalObjects_getObjectIdFromVrom(uintptr_t vromStart, ObjectId *out) {
     return recomputil_u32_value_hashmap_get(gVromToObjId, vromStart, out);
 }
 
-RECOMP_EXPORT void *ZGlobalObj_getGlobalObjectFromVrom(uintptr_t vromStart) {
+RECOMP_EXPORT void *GlobalObjects_getGlobalObjectFromVrom(uintptr_t vromStart) {
     ObjectId id;
 
-    if (ZGlobalObj_getObjectIdFromVrom(vromStart, &id)) {
-        return ZGlobalObj_getGlobalObject(id);
+    if (GlobalObjects_getObjectIdFromVrom(vromStart, &id)) {
+        return GlobalObjects_getGlobalObject(id);
     }
 
     return NULL;
@@ -72,12 +72,12 @@ bool hasDangeonKeepDependency(ObjectId id) {
     return id == OBJECT_BDOOR || id == OBJECT_SYOKUDAI;
 }
 
-RECOMP_EXPORT Gfx *ZGlobalObj_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr) {
+RECOMP_EXPORT Gfx *GlobalObjects_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr) {
     if (!isSegmentedPtr(segmentedPtr)) {
         return NULL;
     }
 
-    void *obj = ZGlobalObj_getGlobalObject(id);
+    void *obj = GlobalObjects_getGlobalObject(id);
 
     if (!obj) {
         return NULL;
@@ -91,7 +91,7 @@ RECOMP_EXPORT Gfx *ZGlobalObj_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr) {
             Repoint_setFieldOrDangeonKeep(GAMEPLAY_DANGEON_KEEP);
         }
 
-        ZGlobalObj_globalizeSegmentedDL(obj, segmentedPtr);
+        GlobalObjects_globalizeSegmentedDL(obj, segmentedPtr);
 
         Repoint_unsetFieldOrDangeonKeep();
     }
@@ -100,10 +100,10 @@ RECOMP_EXPORT Gfx *ZGlobalObj_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr) {
 }
 
 // Can't start loading objects in until the dma manager is initialized
-RECOMP_DECLARE_EVENT(ZGlobalObj_onReady());
+RECOMP_DECLARE_EVENT(onReady());
 
 RECOMP_HOOK_RETURN("Main_Init")
 void initializeObjectManagerOnce() {
     initObjectManager();
-    ZGlobalObj_onReady();
+    onReady();
 }

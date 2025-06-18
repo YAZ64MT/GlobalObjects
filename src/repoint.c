@@ -21,14 +21,14 @@ void Repoint_unsetFieldOrDangeonKeep() {
     gFieldOrDangeonKeep = 0;
 }
 
-RECOMP_EXPORT void ZGlobalObj_rebaseDL(void *newBase, Gfx *globalPtr, unsigned targetSegment) {
+RECOMP_EXPORT void GlobalObjects_rebaseDL(void *newBase, Gfx *globalPtr, unsigned targetSegment) {
     if (isSegmentedPtr(newBase)) {
-        recomp_printf("ZGlobalObj_rebaseDL: Incorrectly passed in non-global pointer 0x%X as newBase\n", newBase);
+        recomp_printf("GlobalObjects_rebaseDL: Incorrectly passed in non-global pointer 0x%X as newBase\n", newBase);
         return;
     }
 
     if (isSegmentedPtr(globalPtr)) {
-        recomp_printf("ZGlobalObj_rebaseDL: Incorrectly passed in non-global pointer 0x%X as globalPtr\n", globalPtr);
+        recomp_printf("GlobalObjects_rebaseDL: Incorrectly passed in non-global pointer 0x%X as globalPtr\n", globalPtr);
         return;
     }
 
@@ -50,7 +50,7 @@ RECOMP_EXPORT void ZGlobalObj_rebaseDL(void *newBase, Gfx *globalPtr, unsigned t
 
             case G_DL:
                 if (currentSegment == targetSegment) {
-                    ZGlobalObj_rebaseDL(newBase, TO_GLOBAL_PTR(newBase, globalPtr->words.w1), targetSegment);
+                    GlobalObjects_rebaseDL(newBase, TO_GLOBAL_PTR(newBase, globalPtr->words.w1), targetSegment);
                 }
 
                 if ((globalPtr->words.w0 >> 16 & 0xFF) == G_DL_NOPUSH) {
@@ -65,9 +65,9 @@ RECOMP_EXPORT void ZGlobalObj_rebaseDL(void *newBase, Gfx *globalPtr, unsigned t
                     //recomp_printf("Repointing 00x%X -> 0x%X\n", globalPtr->words.w1, TO_GLOBAL_PTR(newBase, globalPtr->words.w1));
                     globalPtr->words.w1 = (uintptr_t)TO_GLOBAL_PTR(newBase, globalPtr->words.w1);
                 } else if (currentSegment == SEGMENT_GAMEPLAY_KEEP) {
-                    globalPtr->words.w1 = (uintptr_t)(ZGlobalObj_getGlobalGfxPtr(GAMEPLAY_KEEP, (Gfx *)(globalPtr->words.w1)));
+                    globalPtr->words.w1 = (uintptr_t)(GlobalObjects_getGlobalGfxPtr(GAMEPLAY_KEEP, (Gfx *)(globalPtr->words.w1)));
                 } else if (currentSegment == SEGMENT_FIELD_OR_DANGEON_KEEP && gFieldOrDangeonKeep) {
-                    globalPtr->words.w1 = (uintptr_t)(ZGlobalObj_getGlobalGfxPtr(gFieldOrDangeonKeep, (Gfx *)(globalPtr->words.w1)));
+                    globalPtr->words.w1 = (uintptr_t)(GlobalObjects_getGlobalGfxPtr(gFieldOrDangeonKeep, (Gfx *)(globalPtr->words.w1)));
                 }
                 break;
 
@@ -79,22 +79,22 @@ RECOMP_EXPORT void ZGlobalObj_rebaseDL(void *newBase, Gfx *globalPtr, unsigned t
     }
 }
 
-RECOMP_EXPORT void ZGlobalObj_globalizeSegmentedDL(void *obj, Gfx *segmentedPtr) {
+RECOMP_EXPORT void GlobalObjects_globalizeSegmentedDL(void *obj, Gfx *segmentedPtr) {
     if (!isSegmentedPtr(segmentedPtr) ) {
-        recomp_printf("ZGlobalObj_globalizeSegmentedDL: Incorrectly passed in global pointer 0x%X as segmentedPtr\n", segmentedPtr);
+        recomp_printf("GlobalObjects_globalizeSegmentedDL: Incorrectly passed in global pointer 0x%X as segmentedPtr\n", segmentedPtr);
         return;
     }
 
-    ZGlobalObj_rebaseDL(obj, TO_GLOBAL_PTR(obj, segmentedPtr), SEGMENT_NUMBER(segmentedPtr));
+    GlobalObjects_rebaseDL(obj, TO_GLOBAL_PTR(obj, segmentedPtr), SEGMENT_NUMBER(segmentedPtr));
 }
 
-RECOMP_EXPORT void ZGlobalObj_globalizeLodLimbSkeleton(void *obj, FlexSkeletonHeader *skel) {
+RECOMP_EXPORT void GlobalObjects_globalizeLodLimbSkeleton(void *obj, FlexSkeletonHeader *skel) {
     if (isSegmentedPtr(skel)) {
         skel = TO_GLOBAL_PTR(obj, skel);
     }
 
     if (!isSegmentedPtr(skel->sh.segment)) {
-        recomp_printf("ZGlobalObj_globalizeLodLimbSkeleton: FlexSkeletonHeader is already global!");
+        recomp_printf("GlobalObjects_globalizeLodLimbSkeleton: FlexSkeletonHeader is already global!");
         return;
     }
 
@@ -116,13 +116,13 @@ RECOMP_EXPORT void ZGlobalObj_globalizeLodLimbSkeleton(void *obj, FlexSkeletonHe
     }
 }
 
-RECOMP_EXPORT void ZGlobalObj_globalizeStandardLimbSkeleton(void *obj, FlexSkeletonHeader *skel) {
+RECOMP_EXPORT void GlobalObjects_globalizeStandardLimbSkeleton(void *obj, FlexSkeletonHeader *skel) {
     if (isSegmentedPtr(skel)) {
         skel = TO_GLOBAL_PTR(obj, skel);
     }
 
     if (!isSegmentedPtr(skel->sh.segment)) {
-        recomp_printf("ZGlobalObj_globalizeStandardLimbSkeleton: FlexSkeletonHeader is already global!");
+        recomp_printf("GlobalObjects_globalizeStandardLimbSkeleton: FlexSkeletonHeader is already global!");
         return;
     }
 

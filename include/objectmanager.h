@@ -8,12 +8,12 @@
 
 // Returns a pointer to the object with the given id
 // if it was not already loaded, it is loaded here
-void *ZGlobalObj_getGlobalObject(ObjectId id);
+void *GlobalObjects_getGlobalObject(ObjectId id);
 
-Gfx *ZGlobalObj_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr);
+Gfx *GlobalObjects_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr);
 
-bool ZGlobalObj_getObjectIdFromVrom(uintptr_t vromStart, ObjectId *out);
+bool GlobalObjects_getObjectIdFromVrom(uintptr_t vromStart, ObjectId *out);
 
-void *ZGlobalObj_getGlobalObjectFromVrom(uintptr_t vromStart);
+void *GlobalObjects_getGlobalObjectFromVrom(uintptr_t vromStart);
 
 #endif
