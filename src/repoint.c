@@ -60,6 +60,8 @@ RECOMP_EXPORT void GlobalObjects_rebaseDL(void *newBase, Gfx *globalPtr, unsigne
             case G_VTX:
             case G_MTX:
             case G_SETTIMG:
+            case G_SETZIMG:
+            case G_SETCIMG:
             case G_MOVEMEM:
                 if (currentSegment == targetSegment) {
                     //recomp_printf("Repointing 00x%X -> 0x%X\n", globalPtr->words.w1, TO_GLOBAL_PTR(newBase, globalPtr->words.w1));
