@@ -49,6 +49,7 @@ RECOMP_EXPORT void GlobalObjects_rebaseDL(void *newBase, Gfx *globalPtr, unsigne
                 break;
 
             case G_DL:
+            case G_BRANCH_Z:
                 if (currentSegment == targetSegment) {
                     GlobalObjects_rebaseDL(newBase, TO_GLOBAL_PTR(newBase, globalPtr->words.w1), targetSegment);
                 }
