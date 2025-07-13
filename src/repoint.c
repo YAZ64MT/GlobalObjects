@@ -70,12 +70,6 @@ RECOMP_EXPORT void GlobalObjects_rebaseDL(void *newBase, Gfx *globalPtr, unsigne
                 if (currentSegment == targetSegment) {
                     // recomp_printf("Repointing 0x0%X -> 0x%X\n", globalPtr->words.w1, TO_GLOBAL_PTR(newBase, globalPtr->words.w1));
                     globalPtr->words.w1 = (uintptr_t)TO_GLOBAL_PTR(newBase, globalPtr->words.w1);
-                } else if (currentSegment == SEGMENT_GAMEPLAY_KEEP) {
-                    void *gkPtr = opcode == G_DL ? GlobalObjects_getGlobalGfxPtr(GAMEPLAY_KEEP, (Gfx *)globalPtr->words.w1) : TO_GLOBAL_PTR(GlobalObjects_getGlobalObject(GAMEPLAY_KEEP), globalPtr->words.w1);
-                    if (gkPtr) {
-                        recomp_printf("Repointing 0x0%X -> 0x%X\n", globalPtr->words.w1, gkPtr);
-                        globalPtr->words.w1 = (uintptr_t)(gkPtr);
-                    }
                 }
                 break;
 

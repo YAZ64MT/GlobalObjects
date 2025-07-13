@@ -120,6 +120,8 @@ RECOMP_EXPORT Gfx *GlobalObjects_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr)
             GlobalObjects_rebaseDL(GlobalObjects_getGlobalObject(fieldOrDungeonKeep), TO_GLOBAL_PTR(obj, segmentedPtr), 0x05);
         }
 
+        GlobalObjects_rebaseDL(GlobalObjects_getGlobalObject(GAMEPLAY_KEEP), TO_GLOBAL_PTR(obj, segmentedPtr), 0x04);
+        
         GlobalObjects_globalizeSegmentedDL(obj, segmentedPtr);
     }
 
