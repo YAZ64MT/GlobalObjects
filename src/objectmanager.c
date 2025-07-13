@@ -109,15 +109,18 @@ RECOMP_EXPORT Gfx *GlobalObjects_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr)
 
     if (recomputil_u32_hashset_insert(gRepointTracker[id], (uintptr_t)segmentedPtr)) {
         // workaround for gameplay_dangeon_keep and gameplay_field_keep sharing a segment
+        ObjectId fieldOrDungeonKeep = 0;
         if (hasFieldKeepDependency(id)) {
-            Repoint_setFieldOrDangeonKeep(GAMEPLAY_FIELD_KEEP);
+            fieldOrDungeonKeep = GAMEPLAY_FIELD_KEEP;
         } else if (hasDangeonKeepDependency(id)) {
-            Repoint_setFieldOrDangeonKeep(GAMEPLAY_DANGEON_KEEP);
+            fieldOrDungeonKeep = GAMEPLAY_DANGEON_KEEP;
+        }
+
+        if (fieldOrDungeonKeep) {
+            GlobalObjects_rebaseDL(GlobalObjects_getGlobalObject(fieldOrDungeonKeep), TO_GLOBAL_PTR(obj, segmentedPtr), 0x05);
         }
 
         GlobalObjects_globalizeSegmentedDL(obj, segmentedPtr);
-
-        Repoint_unsetFieldOrDangeonKeep();
     }
 
     return TO_GLOBAL_PTR(obj, segmentedPtr);

@@ -11,16 +11,6 @@
 #define SEGMENT_GAMEPLAY_KEEP 4
 #define SEGMENT_FIELD_OR_DANGEON_KEEP 5
 
-ObjectId gFieldOrDangeonKeep;
-
-void Repoint_setFieldOrDangeonKeep(ObjectId id) {
-    gFieldOrDangeonKeep = id;
-}
-
-void Repoint_unsetFieldOrDangeonKeep() {
-    gFieldOrDangeonKeep = 0;
-}
-
 RECOMP_EXPORT void GlobalObjects_rebaseDL(void *newBase, Gfx *globalPtr, unsigned targetSegment) {
     if (!isObjectManagerReady("GlobalObjects_rebaseDL")) {
         return;
@@ -78,18 +68,13 @@ RECOMP_EXPORT void GlobalObjects_rebaseDL(void *newBase, Gfx *globalPtr, unsigne
             case G_SETCIMG:
             case G_MOVEMEM:
                 if (currentSegment == targetSegment) {
-                    //recomp_printf("Repointing 00x%X -> 0x%X\n", globalPtr->words.w1, TO_GLOBAL_PTR(newBase, globalPtr->words.w1));
+                    // recomp_printf("Repointing 0x0%X -> 0x%X\n", globalPtr->words.w1, TO_GLOBAL_PTR(newBase, globalPtr->words.w1));
                     globalPtr->words.w1 = (uintptr_t)TO_GLOBAL_PTR(newBase, globalPtr->words.w1);
                 } else if (currentSegment == SEGMENT_GAMEPLAY_KEEP) {
-                    Gfx *gkPtr = GlobalObjects_getGlobalGfxPtr(GAMEPLAY_KEEP, (Gfx *)(globalPtr->words.w1));
+                    void *gkPtr = opcode == G_DL ? GlobalObjects_getGlobalGfxPtr(GAMEPLAY_KEEP, (Gfx *)globalPtr->words.w1) : TO_GLOBAL_PTR(GlobalObjects_getGlobalObject(GAMEPLAY_KEEP), globalPtr->words.w1);
                     if (gkPtr) {
-                        // recomp_printf("Repointing 00x%X -> 0x%X\n", globalPtr->words.w1, (GlobalObjects_getGlobalGfxPtr(GAMEPLAY_KEEP, (Gfx *)(globalPtr->words.w1))));
+                        recomp_printf("Repointing 0x0%X -> 0x%X\n", globalPtr->words.w1, gkPtr);
                         globalPtr->words.w1 = (uintptr_t)(gkPtr);
-                    }
-                } else if (currentSegment == SEGMENT_FIELD_OR_DANGEON_KEEP && gFieldOrDangeonKeep) {
-                    Gfx *fdkPtr = GlobalObjects_getGlobalGfxPtr(gFieldOrDangeonKeep, (Gfx *)(globalPtr->words.w1));
-                    if (fdkPtr) {
-                        globalPtr->words.w1 = (uintptr_t)(fdkPtr);
                     }
                 }
                 break;
