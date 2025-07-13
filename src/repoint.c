@@ -97,10 +97,15 @@ RECOMP_EXPORT void GlobalObjects_globalizeSegmentedDL(void *obj, Gfx *segmentedP
         return;
     }
 
-    GlobalObjects_rebaseDL(obj, TO_GLOBAL_PTR(obj, segmentedPtr), SEGMENT_NUMBER(segmentedPtr));
+    GlobalObjects_rebaseDL(obj, TO_GLOBAL_PTR(obj, segmentedPtr), (uintptr_t)segmentedPtr >> 24);
 }
 
 RECOMP_EXPORT void GlobalObjects_globalizeLodLimbSkeleton(void *obj, FlexSkeletonHeader *skel) {
+    if (!skel) {
+        recomp_printf("GlobalObjects_globalizeStandardLimbSkeleton: FlexSkeletonHeader skel is NULL!");
+        return;
+    }
+
     if (isSegmentedPtr(skel)) {
         skel = TO_GLOBAL_PTR(obj, skel);
     }
@@ -129,6 +134,11 @@ RECOMP_EXPORT void GlobalObjects_globalizeLodLimbSkeleton(void *obj, FlexSkeleto
 }
 
 RECOMP_EXPORT void GlobalObjects_globalizeStandardLimbSkeleton(void *obj, FlexSkeletonHeader *skel) {
+    if (!skel) {
+        recomp_printf("GlobalObjects_globalizeStandardLimbSkeleton: FlexSkeletonHeader skel is NULL!");
+        return;
+    }
+
     if (isSegmentedPtr(skel)) {
         skel = TO_GLOBAL_PTR(obj, skel);
     }
