@@ -22,6 +22,10 @@ void Repoint_unsetFieldOrDangeonKeep() {
 }
 
 RECOMP_EXPORT void GlobalObjects_rebaseDL(void *newBase, Gfx *globalPtr, unsigned targetSegment) {
+    if (!isObjectManagerReady("GlobalObjects_rebaseDL")) {
+        return;
+    }
+
     if (!newBase) {
         recomp_printf("GlobalObjects_rebaseDL: Incorrectly passed in NULL pointer 0x%X as newBase\n", newBase);
         return;
@@ -77,9 +81,16 @@ RECOMP_EXPORT void GlobalObjects_rebaseDL(void *newBase, Gfx *globalPtr, unsigne
                     //recomp_printf("Repointing 00x%X -> 0x%X\n", globalPtr->words.w1, TO_GLOBAL_PTR(newBase, globalPtr->words.w1));
                     globalPtr->words.w1 = (uintptr_t)TO_GLOBAL_PTR(newBase, globalPtr->words.w1);
                 } else if (currentSegment == SEGMENT_GAMEPLAY_KEEP) {
-                    globalPtr->words.w1 = (uintptr_t)(GlobalObjects_getGlobalGfxPtr(GAMEPLAY_KEEP, (Gfx *)(globalPtr->words.w1)));
+                    Gfx *gkPtr = GlobalObjects_getGlobalGfxPtr(GAMEPLAY_KEEP, (Gfx *)(globalPtr->words.w1));
+                    if (gkPtr) {
+                        // recomp_printf("Repointing 00x%X -> 0x%X\n", globalPtr->words.w1, (GlobalObjects_getGlobalGfxPtr(GAMEPLAY_KEEP, (Gfx *)(globalPtr->words.w1))));
+                        globalPtr->words.w1 = (uintptr_t)(gkPtr);
+                    }
                 } else if (currentSegment == SEGMENT_FIELD_OR_DANGEON_KEEP && gFieldOrDangeonKeep) {
-                    globalPtr->words.w1 = (uintptr_t)(GlobalObjects_getGlobalGfxPtr(gFieldOrDangeonKeep, (Gfx *)(globalPtr->words.w1)));
+                    Gfx *fdkPtr = GlobalObjects_getGlobalGfxPtr(gFieldOrDangeonKeep, (Gfx *)(globalPtr->words.w1));
+                    if (fdkPtr) {
+                        globalPtr->words.w1 = (uintptr_t)(fdkPtr);
+                    }
                 }
                 break;
 
@@ -92,6 +103,10 @@ RECOMP_EXPORT void GlobalObjects_rebaseDL(void *newBase, Gfx *globalPtr, unsigne
 }
 
 RECOMP_EXPORT void GlobalObjects_globalizeSegmentedDL(void *obj, Gfx *segmentedPtr) {
+    if (!isObjectManagerReady("GlobalObjects_globalizeSegmentedDL")) {
+        return;
+    }
+
     if (!isSegmentedPtr(segmentedPtr) ) {
         recomp_printf("GlobalObjects_globalizeSegmentedDL: Incorrectly passed in global pointer 0x%X as segmentedPtr\n", segmentedPtr);
         return;

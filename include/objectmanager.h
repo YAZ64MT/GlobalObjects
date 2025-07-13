@@ -16,4 +16,7 @@ bool GlobalObjects_getObjectIdFromVrom(uintptr_t vromStart, ObjectId *out);
 
 void *GlobalObjects_getGlobalObjectFromVrom(uintptr_t vromStart);
 
+// Func name is used for error printing
+bool isObjectManagerReady(const char *funcName);
+
 #endif

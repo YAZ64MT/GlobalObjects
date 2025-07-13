@@ -6,13 +6,22 @@
 #include "helpers.h"
 
 // Maps VROM addresses to their respective object IDs
-U32ValueHashmapHandle gVromToObjId;
+U32ValueHashmapHandle gVromToObjId = 0;
 
 // maps object ids to their location in memory
 void *gObjIdToMemTable[OBJECT_ID_MAX] = {0};
 
 // avoid going repointing each dl more than once
 U32HashsetHandle gRepointTracker[OBJECT_ID_MAX];
+
+bool isObjectManagerReady(const char *funcName) {
+    if (!gVromToObjId) {
+        recomp_printf("GlobalObjects: WARNING! FUNCTION %s CALLED BUT OBJECT MANAGER IS NOT INITIALIZED\n", funcName);
+        return false;
+    }
+
+    return true;
+}
 
 void initObjectManager() {
     gVromToObjId = recomputil_create_u32_value_hashmap();
@@ -33,6 +42,10 @@ void *loadObjectFromVrom(uintptr_t vromAddr, size_t size) {
 }
 
 RECOMP_EXPORT void *GlobalObjects_getGlobalObject(ObjectId id) {
+    if (!isObjectManagerReady("GlobalObjects_getGlobalObject")) {
+        return NULL;
+    }
+
     if (id > OBJECT_ID_MAX) {
         return NULL;
     }
@@ -51,10 +64,17 @@ RECOMP_EXPORT void *GlobalObjects_getGlobalObject(ObjectId id) {
 }
 
 RECOMP_EXPORT bool GlobalObjects_getObjectIdFromVrom(uintptr_t vromStart, ObjectId *out) {
+    if (!isObjectManagerReady("GlobalObjects_getObjectIdFromVrom")) {
+        return false;
+    }
     return recomputil_u32_value_hashmap_get(gVromToObjId, vromStart, out);
 }
 
 RECOMP_EXPORT void *GlobalObjects_getGlobalObjectFromVrom(uintptr_t vromStart) {
+    if (!isObjectManagerReady("GlobalObjects_getGlobalObjectFromVrom")) {
+        return NULL;
+    }
+
     ObjectId id;
 
     if (GlobalObjects_getObjectIdFromVrom(vromStart, &id)) {
@@ -73,6 +93,10 @@ bool hasDangeonKeepDependency(ObjectId id) {
 }
 
 RECOMP_EXPORT Gfx *GlobalObjects_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr) {
+    if (!isObjectManagerReady("GlobalObjects_getGlobalGfxPtr")) {
+        return NULL;
+    }
+
     if (!isSegmentedPtr(segmentedPtr)) {
         return NULL;
     }
