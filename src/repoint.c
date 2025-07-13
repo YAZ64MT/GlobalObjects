@@ -22,6 +22,15 @@ void Repoint_unsetFieldOrDangeonKeep() {
 }
 
 RECOMP_EXPORT void GlobalObjects_rebaseDL(void *newBase, Gfx *globalPtr, unsigned targetSegment) {
+    if (!newBase) {
+        recomp_printf("GlobalObjects_rebaseDL: Incorrectly passed in NULL pointer 0x%X as newBase\n", newBase);
+        return;
+    }
+
+    if (!globalPtr) {
+        recomp_printf("GlobalObjects_rebaseDL: Incorrectly passed in NULL pointer 0x%X as globalPtr\n", globalPtr);
+    }
+
     if (isSegmentedPtr(newBase)) {
         recomp_printf("GlobalObjects_rebaseDL: Incorrectly passed in non-global pointer 0x%X as newBase\n", newBase);
         return;
@@ -41,7 +50,7 @@ RECOMP_EXPORT void GlobalObjects_rebaseDL(void *newBase, Gfx *globalPtr, unsigne
     while (!isEndDl) {
         opcode = globalPtr->words.w0 >> 24;
 
-        currentSegment = SEGMENT_NUMBER(globalPtr->words.w1);
+        currentSegment = globalPtr->words.w1 >> 24;
 
         switch (opcode) {
             case G_ENDDL:
