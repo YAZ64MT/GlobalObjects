@@ -56,21 +56,23 @@ RECOMP_EXPORT void GlobalObjects_rebaseDL(Gfx *globalPtr, SegmentMap segments) {
                     isEndDl = true;
                     break;
 
-                case G_BRANCH_Z: {
-                    // recomp_printf("Processing %llX\n", *((u64 *)globalPtr));
-                    currentSegment = (globalPtr - 1)->words.w1 >> 24;
-                    segmentAddr = currentSegment < 0x10 ? segments[currentSegment] : NULL;
+                case G_BRANCH_Z: 
+                    if ((globalPtr - 1)->words.w0 >> 24 & 0xFF == G_RDPHALF_1) {
+                        // recomp_printf("Processing %llX\n", *((u64 *)globalPtr));
+                        currentSegment = (globalPtr - 1)->words.w1 >> 24;
+                        segmentAddr = currentSegment < 0x10 ? segments[currentSegment] : NULL;
 
-                    if (segmentAddr) {
-                        if (stackSize < STACK_MAX_SIZE) {
-                            dlStack[stackSize++] = globalPtr + 1;
+                        if (segmentAddr) {
+                            if (stackSize < STACK_MAX_SIZE) {
+                                dlStack[stackSize++] = globalPtr + 1;
+                            }
+
+                            Gfx *newGlobal = TO_GLOBAL_PTR(segmentAddr, (globalPtr - 1)->words.w1);
+                            (globalPtr - 1)->words.w1 = (uintptr_t)newGlobal;
+                            globalPtr = newGlobal - 1;
                         }
-
-                        Gfx *newGlobal = TO_GLOBAL_PTR(segmentAddr, (globalPtr - 1)->words.w1);
-                        (globalPtr - 1)->words.w1 = (uintptr_t)newGlobal;
-                        globalPtr = newGlobal - 1;
                     }
-                }
+
                     break;
 
                 case G_DL:
