@@ -2,11 +2,9 @@
 #define __REPOINT_H__
 #include "global.h"
 
-void Repoint_setFieldOrDangeonKeep(ObjectId id);
+typedef void *SegmentMap[0x10];
 
-void Repoint_unsetFieldOrDangeonKeep();
-
-void GlobalObjects_rebaseDL(void *newBase, Gfx *globalPtr, unsigned targetSegment);
+void GlobalObjects_rebaseDL(Gfx *dl, SegmentMap segments);
 
 void GlobalObjects_globalizeSegmentedDL(void *obj, Gfx *segmentedPtr);
 

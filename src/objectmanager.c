@@ -92,6 +92,8 @@ bool hasDangeonKeepDependency(ObjectId id) {
     return id == OBJECT_BDOOR || id == OBJECT_SYOKUDAI;
 }
 
+static SegmentMap sGlobalGfxSegmentMap = {0};
+
 RECOMP_EXPORT Gfx *GlobalObjects_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr) {
     if (!isObjectManagerReady("GlobalObjects_getGlobalGfxPtr")) {
         return NULL;
@@ -107,6 +109,9 @@ RECOMP_EXPORT Gfx *GlobalObjects_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr)
         return NULL;
     }
 
+    sGlobalGfxSegmentMap[0x04] = GlobalObjects_getGlobalObject(GAMEPLAY_KEEP);
+    sGlobalGfxSegmentMap[0x05] = NULL;
+
     if (recomputil_u32_hashset_insert(gRepointTracker[id], (uintptr_t)segmentedPtr)) {
         // workaround for gameplay_dangeon_keep and gameplay_field_keep sharing a segment
         ObjectId fieldOrDungeonKeep = 0;
@@ -117,12 +122,16 @@ RECOMP_EXPORT Gfx *GlobalObjects_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr)
         }
 
         if (fieldOrDungeonKeep) {
-            GlobalObjects_rebaseDL(GlobalObjects_getGlobalObject(fieldOrDungeonKeep), TO_GLOBAL_PTR(obj, segmentedPtr), 0x05);
+            sGlobalGfxSegmentMap[0x05] = GlobalObjects_getGlobalObject(fieldOrDungeonKeep);
         }
 
-        GlobalObjects_rebaseDL(GlobalObjects_getGlobalObject(GAMEPLAY_KEEP), TO_GLOBAL_PTR(obj, segmentedPtr), 0x04);
+        unsigned segment = (uintptr_t)segmentedPtr >> 24;
+
+        sGlobalGfxSegmentMap[segment] = obj;
+
+        GlobalObjects_rebaseDL(TO_GLOBAL_PTR(obj, segmentedPtr), sGlobalGfxSegmentMap);
         
-        GlobalObjects_globalizeSegmentedDL(obj, segmentedPtr);
+        sGlobalGfxSegmentMap[segment] = NULL;
     }
 
     return TO_GLOBAL_PTR(obj, segmentedPtr);
