@@ -149,7 +149,7 @@ RECOMP_EXPORT void GlobalObjects_globalizeSegmentedDL(void *obj, Gfx *segmentedP
 
 RECOMP_EXPORT void GlobalObjects_globalizeLodLimbSkeleton(void *obj, FlexSkeletonHeader *skel) {
     if (!skel) {
-        recomp_printf("GlobalObjects_globalizeStandardLimbSkeleton: FlexSkeletonHeader skel is NULL!");
+        recomp_printf("GlobalObjects_globalizeStandardLimbSkeleton: FlexSkeletonHeader skel is NULL!\n");
         return;
     }
 
@@ -157,12 +157,9 @@ RECOMP_EXPORT void GlobalObjects_globalizeLodLimbSkeleton(void *obj, FlexSkeleto
         skel = TO_GLOBAL_PTR(obj, skel);
     }
 
-    if (!isSegmentedPtr(skel->sh.segment)) {
-        recomp_printf("GlobalObjects_globalizeLodLimbSkeleton: FlexSkeletonHeader is already global!");
-        return;
+    if (isSegmentedPtr(skel->sh.segment)) {
+        skel->sh.segment = TO_GLOBAL_PTR(obj, skel->sh.segment);
     }
-
-    skel->sh.segment = TO_GLOBAL_PTR(obj, skel->sh.segment);
 
     LodLimb **limbs = (LodLimb **)skel->sh.segment;
 
@@ -173,8 +170,14 @@ RECOMP_EXPORT void GlobalObjects_globalizeLodLimbSkeleton(void *obj, FlexSkeleto
     for (u8 i = 0; i < limbCount; ++i) {
         limb = TO_GLOBAL_PTR(obj, limbs[i]);
         if (limb->dLists[0]) { // do not repoint limbs without display lists
-            limb->dLists[0] = TO_GLOBAL_PTR(obj, limb->dLists[0]);
-            limb->dLists[1] = TO_GLOBAL_PTR(obj, limb->dLists[1]);
+
+            if (isSegmentedPtr(limb->dLists[0])) {
+                limb->dLists[0] = TO_GLOBAL_PTR(obj, limb->dLists[0]);
+            }
+            
+            if (isSegmentedPtr(limb->dLists[1])) {
+                limb->dLists[1] = TO_GLOBAL_PTR(obj, limb->dLists[1]);
+            }
         }
         limbs[i] = limb;
     }
@@ -190,9 +193,8 @@ RECOMP_EXPORT void GlobalObjects_globalizeStandardLimbSkeleton(void *obj, FlexSk
         skel = TO_GLOBAL_PTR(obj, skel);
     }
 
-    if (!isSegmentedPtr(skel->sh.segment)) {
-        recomp_printf("GlobalObjects_globalizeStandardLimbSkeleton: FlexSkeletonHeader is already global!");
-        return;
+    if (isSegmentedPtr(skel->sh.segment)) {
+        skel->sh.segment = TO_GLOBAL_PTR(obj, skel->sh.segment);
     }
 
     skel->sh.segment = TO_GLOBAL_PTR(obj, skel->sh.segment);
@@ -206,7 +208,9 @@ RECOMP_EXPORT void GlobalObjects_globalizeStandardLimbSkeleton(void *obj, FlexSk
     for (u8 i = 0; i < limbCount; ++i) {
         limb = TO_GLOBAL_PTR(obj, limbs[i]);
         if (limb->dList) { // do not repoint limbs without display lists
-            limb->dList = TO_GLOBAL_PTR(obj, limb->dList);
+            if (isSegmentedPtr(limb->dList)) {
+                limb->dList = TO_GLOBAL_PTR(obj, limb->dList);
+            }
         }
         limbs[i] = limb;
     }
