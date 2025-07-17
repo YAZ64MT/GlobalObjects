@@ -4,8 +4,6 @@ This is a mod for Majora's Mask: Recompiled that is a dependency for mods that n
 
 This can be used to draw objects in places that they are not normally loaded.
 
-API is currently unstable and may change between updates.
-
 ### Usage
 
 Add [this header file](https://github.com/Neirn/Z64Recomp_GlobalObjects/blob/main/include/globalobjects_api.h) to your mod's includes and the mod to your dependencies in your toml:
