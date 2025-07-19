@@ -153,13 +153,9 @@ RECOMP_EXPORT void GlobalObjects_globalizeLodLimbSkeleton(void *obj, FlexSkeleto
         return;
     }
 
-    if (isSegmentedPtr(skel)) {
-        skel = TO_GLOBAL_PTR(obj, skel);
-    }
+    skel = TO_GLOBAL_PTR(obj, skel);
 
-    if (isSegmentedPtr(skel->sh.segment)) {
-        skel->sh.segment = TO_GLOBAL_PTR(obj, skel->sh.segment);
-    }
+    skel->sh.segment = TO_GLOBAL_PTR(obj, skel->sh.segment);
 
     LodLimb **limbs = (LodLimb **)skel->sh.segment;
 
@@ -169,16 +165,15 @@ RECOMP_EXPORT void GlobalObjects_globalizeLodLimbSkeleton(void *obj, FlexSkeleto
 
     for (u8 i = 0; i < limbCount; ++i) {
         limb = TO_GLOBAL_PTR(obj, limbs[i]);
-        if (limb->dLists[0]) { // do not repoint limbs without display lists
 
-            if (isSegmentedPtr(limb->dLists[0])) {
-                limb->dLists[0] = TO_GLOBAL_PTR(obj, limb->dLists[0]);
-            }
-            
-            if (isSegmentedPtr(limb->dLists[1])) {
-                limb->dLists[1] = TO_GLOBAL_PTR(obj, limb->dLists[1]);
-            }
+        if (limb->dLists[0]) { // do not repoint limbs without display lists
+            limb->dLists[0] = TO_GLOBAL_PTR(obj, limb->dLists[0]);
         }
+
+        if (limb->dLists[1]) {
+            limb->dLists[1] = TO_GLOBAL_PTR(obj, limb->dLists[1]);
+        }
+
         limbs[i] = limb;
     }
 }
@@ -189,13 +184,7 @@ RECOMP_EXPORT void GlobalObjects_globalizeStandardLimbSkeleton(void *obj, FlexSk
         return;
     }
 
-    if (isSegmentedPtr(skel)) {
-        skel = TO_GLOBAL_PTR(obj, skel);
-    }
-
-    if (isSegmentedPtr(skel->sh.segment)) {
-        skel->sh.segment = TO_GLOBAL_PTR(obj, skel->sh.segment);
-    }
+    skel = TO_GLOBAL_PTR(obj, skel);
 
     skel->sh.segment = TO_GLOBAL_PTR(obj, skel->sh.segment);
 
@@ -207,11 +196,11 @@ RECOMP_EXPORT void GlobalObjects_globalizeStandardLimbSkeleton(void *obj, FlexSk
 
     for (u8 i = 0; i < limbCount; ++i) {
         limb = TO_GLOBAL_PTR(obj, limbs[i]);
+
         if (limb->dList) { // do not repoint limbs without display lists
-            if (isSegmentedPtr(limb->dList)) {
-                limb->dList = TO_GLOBAL_PTR(obj, limb->dList);
-            }
+            limb->dList = TO_GLOBAL_PTR(obj, limb->dList);
         }
+
         limbs[i] = limb;
     }
 }
