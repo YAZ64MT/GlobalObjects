@@ -166,15 +166,17 @@ RECOMP_EXPORT void GlobalObjects_globalizeLodLimbSkeleton(void *obj, FlexSkeleto
     for (u8 i = 0; i < limbCount; ++i) {
         limb = TO_GLOBAL_PTR(obj, limbs[i]);
 
-        if (limb->dLists[0]) { // do not repoint limbs without display lists
-            limb->dLists[0] = TO_GLOBAL_PTR(obj, limb->dLists[0]);
-        }
+        if (limb) {
+            if (limb->dLists[0]) { // do not repoint limbs without display lists
+                limb->dLists[0] = TO_GLOBAL_PTR(obj, limb->dLists[0]);
+            }
 
-        if (limb->dLists[1]) {
-            limb->dLists[1] = TO_GLOBAL_PTR(obj, limb->dLists[1]);
-        }
+            if (limb->dLists[1]) {
+                limb->dLists[1] = TO_GLOBAL_PTR(obj, limb->dLists[1]);
+            }
 
-        limbs[i] = limb;
+            limbs[i] = limb;
+        }
     }
 }
 
@@ -197,10 +199,12 @@ RECOMP_EXPORT void GlobalObjects_globalizeStandardLimbSkeleton(void *obj, FlexSk
     for (u8 i = 0; i < limbCount; ++i) {
         limb = TO_GLOBAL_PTR(obj, limbs[i]);
 
-        if (limb->dList) { // do not repoint limbs without display lists
-            limb->dList = TO_GLOBAL_PTR(obj, limb->dList);
-        }
+        if (limb) {
+            if (limb->dList) { // do not repoint limbs without display lists
+                limb->dList = TO_GLOBAL_PTR(obj, limb->dList);
+            }
 
-        limbs[i] = limb;
+            limbs[i] = limb;
+        }
     }
 }
