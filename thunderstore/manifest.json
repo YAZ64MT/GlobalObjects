@@ -4,5 +4,6 @@
     "website_url": "https://github.com/YAZ64MT/GlobalObjects",
     "description": "Static object references for mods.",
     "dependencies": [
+        "YAZMT-YAZMT_Core-0.1.1"
     ]
 }
