@@ -46,7 +46,7 @@ RECOMP_EXPORT void *GlobalObjects_getGlobalObject(ObjectId id) {
         return NULL;
     }
 
-    if (id > OBJECT_ID_MAX) {
+    if (id >= OBJECT_ID_MAX) {
         return NULL;
     }
 
