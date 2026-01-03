@@ -28,7 +28,7 @@ void initObjectManager() {
 
     for (size_t i = 0; i < OBJECT_ID_MAX; ++i) {
         if (gObjectTable[i].vromStart) {
-                recomputil_u32_value_hashmap_insert(gVromToObjId, gObjectTable[i].vromStart, i);
+            recomputil_u32_value_hashmap_insert(gVromToObjId, gObjectTable[i].vromStart, i);
         }
     }
 }
@@ -130,7 +130,7 @@ RECOMP_EXPORT Gfx *GlobalObjects_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr)
         sGlobalGfxSegmentMap[segment] = obj;
 
         GlobalObjects_rebaseDL(TO_GLOBAL_PTR(obj, segmentedPtr), sGlobalGfxSegmentMap);
-        
+
         sGlobalGfxSegmentMap[segment] = NULL;
     }
 
@@ -140,8 +140,7 @@ RECOMP_EXPORT Gfx *GlobalObjects_getGlobalGfxPtr(ObjectId id, Gfx *segmentedPtr)
 // Can't start loading objects in until the dma manager is initialized
 RECOMP_DECLARE_EVENT(onReady());
 
-RECOMP_HOOK_RETURN("Main_Init")
-void initializeObjectManagerOnce() {
+RECOMP_HOOK_RETURN("Main_Init") void initializeObjectManagerOnce() {
     initObjectManager();
     onReady();
 }
